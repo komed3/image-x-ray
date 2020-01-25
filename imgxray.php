@@ -7,9 +7,9 @@
      * 
      * readable images:    jpg, png, bmp, ico
      * 
-     * author    komed3
-     * version    1.0
-     * date        2020/01/25
+     * author     komed3
+     * version    1.002
+     * date       2020/01/25
      * 
      *******************************************************************/
     
@@ -89,7 +89,7 @@
             
             if( !preg_match( '/^http(.+)/', $this->image ) ) {
                 
-                $this->xray['exif'] = exif_read_data( $this->image );
+                $this->xray['exif'] = exif_read_data( $this->image, 'ANY_TAG', false );
                 
             }
             
@@ -234,10 +234,14 @@
         }
         
         // @return mixed
-        // @param int $mode
-        public function getSize( int $mode = 3 ) {
+        // @param string $mode [width, height, size]
+        public function getSize( string $mode = 'size' ) {
             
-            return $this->output( 'size', $this->getData( 'size', $mode ) );
+            return $this->output( $mode, $this->getData( 'size', [
+                'width' =>  0,
+                'height' => 1,
+                'size' =>   3
+            ][ $mode ] ) );
             
         }
         
@@ -429,15 +433,14 @@
             if( $decode ) {
                 
                 return $this->output( 'orientation', [
-                    NULL,
-                    'top left side',
-                    'top right side',
-                    'bottom right side',
-                    'bottom left side',
-                    'left side top',
-                    'right side top',
-                    'right side bottom',
-                    'left side bottom'
+                    1 => 'top left side',
+                    2 => 'top right side',
+                    3 => 'bottom right side',
+                    4 => 'bottom left side',
+                    5 => 'left side top',
+                    6 => 'right side top',
+                    7 => 'right side bottom',
+                    8 => 'left side bottom'
                 ][ $this->getExif( 'Orientation' ) ] );
                 
             }
@@ -447,11 +450,11 @@
         }
         
         // @return mixed
-        // @param string $mode [unit, x, y]
+        // @param string $key [unit, x, y]
         // @param bool $decode
-        public function getResolution( string $mode = 'unit', bool $decode = false ) {
+        public function getResolution( string $key = 'unit', bool $decode = false ) {
             
-            switch( $mode ) {
+            switch( $key ) {
                 
                 case 'x':
                     # >>>
@@ -600,8 +603,8 @@
         public function getCustomRendered( bool $boolean = false ) {
             
             return $this->output( 'customRendered', ( $boolean ?
-                             boolval( $this->getExif( 'CustomRendered' ) ) :
-                             $this->getExif( 'CustomRendered' ) ) );
+                            boolval( $this->getExif( 'CustomRendered' ) ) :
+                            $this->getExif( 'CustomRendered' ) ) );
             
         }
         
@@ -753,7 +756,7 @@
                                     }, $this->getExif( 'GPSLongitude' ) ),
                     
                     'alt_ref' =>    $this->getExif( 'GPSAltitudeRef' ),
-                     
+                    
                     'alt' =>        $this->divider( $this->getExif( 'GPSAltitude' ) )
                     
                 ];
@@ -786,13 +789,13 @@
                     
                     case 'alt':
                         return $this->output( 'altitude', [
-                            'ref' =>     $GPS['alt_ref'],
+                            'ref' =>    $GPS['alt_ref'],
                             'refR' =>    [
                                 '' => 'undefined',
-                                0 =>  'Above sea level',
-                                1 =>  'Below sea level'
+                                0 => 'Above sea level',
+                                1 => 'Below sea level'
                             ][ trim( $GPS['alt_ref'] ) ],
-                            'alt' =>     $GPS['alt']
+                            'alt' =>    $GPS['alt']
                         ] );
                         break;
                     
