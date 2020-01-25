@@ -1,4 +1,4 @@
-# IMAGE X-RAY v. 1.002
+# IMAGE X-RAY v. 1.003
 
 __Image X-Ray__ allows easy extraction of exif data from images and photos.
 
@@ -75,12 +75,15 @@ $imgxray->setOutputFormat( @format );
 * * `@divide = true`: return a float value
 * `getLightSource( @decode )` – kind of light source
 * * `@decode = true`: return a readable value
+* `getFlash( @decode )` – flash mode
+* * `@decode = true`: return a readable value
+* `getFlashFired()` – check if flash fired; return a boolean value
 * `getFocalLength( @divide )` – actual focal length of the lens in mm
 * * `@divide = true`: return a float value
 * `getFocalLength35( @divide )` – equivalent focal length assuming a 35mm film camera in mm
 * * `@divide = true`: return a float value
 * `getCustomRendered( @boolean )` – use of special processing on image data
-* * `@boolean = true`: return a boolean
+* * `@boolean = true`: return a boolean value
 * `getWhiteBalance( @decode )` – white balance
 * * `@decode = true`: return a readable value
 * `getDigitalZoomRatio()` – digital zoom ratio

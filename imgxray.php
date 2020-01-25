@@ -8,7 +8,7 @@
      * readable images:    jpg, png, bmp, ico
      * 
      * author     komed3
-     * version    1.002
+     * version    1.003
      * date       2020/01/25
      * 
      *******************************************************************/
@@ -450,11 +450,11 @@
         }
         
         // @return mixed
-        // @param string $key [unit, x, y]
+        // @param string $mode [unit, x, y]
         // @param bool $decode
-        public function getResolution( string $key = 'unit', bool $decode = false ) {
+        public function getResolution( string $mode = 'unit', bool $decode = false ) {
             
-            switch( $key ) {
+            switch( $mode ) {
                 
                 case 'x':
                     # >>>
@@ -567,6 +567,38 @@
             }
             
             return $this->output( 'lightSource', $this->getExif( 'LightSource' ) );
+            
+        }
+        
+        // @return mixed
+        // @param bool $decode
+        // @since v. 1.003
+        public function getFlash( bool $decode = false ) {
+            
+            if( $decode ) {
+                
+                return $this->output( 'flash', [
+                    '0' =>  'FlashDidNotFire',
+                    '1' =>  'FlashFired',
+                    '2' =>  'StrobeReturnLightDetected',
+                    '4' =>  'StrobeReturnLightNotDetected',
+                    '8' =>  'CompulsoryFlashMode',
+                    '16' => 'AutoMode',
+                    '32' => 'NoFlashFunction',
+                    '64' => 'RedEyeReductionMode'
+                ][ $this->getExif( 'Flash' ) ] );
+                
+            }
+            
+            return $this->output( 'flash', $this->getExif( 'Flash' ) );
+            
+        }
+        
+        // @return bool
+        // @since v. 1.003
+        public function getFlashFired() {
+            
+            return ( $this->getExif( 'Flash' ) & 1 ) != 0;
             
         }
         
@@ -789,13 +821,13 @@
                     
                     case 'alt':
                         return $this->output( 'altitude', [
-                            'ref' =>    $GPS['alt_ref'],
-                            'refR' =>    [
+                            'ref' =>  $GPS['alt_ref'],
+                            'refR' => [
                                 '' => 'undefined',
-                                0 => 'Above sea level',
-                                1 => 'Below sea level'
+                                0 =>  'Above sea level',
+                                1 =>  'Below sea level'
                             ][ trim( $GPS['alt_ref'] ) ],
-                            'alt' =>    $GPS['alt']
+                            'alt' =>  $GPS['alt']
                         ] );
                         break;
                     
